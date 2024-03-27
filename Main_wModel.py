@@ -7,16 +7,17 @@ current_wd = os.getcwd()
 python_fast = "E:/KSHITIJ/FastOAD/Fastenvk1/Scripts"
 python_vsp = "D:/Anaconda/Directory/envs/vsppytools"
 
+input_param = "parameters_RUNTEST.json"
+vsp_input = "BWB.vsp3"
+
 output_name = "output_Model.log"
 error_name = "error_Model.log"
 output_log = os.path.join(current_wd,output_name)
 error_log = os.path.join(current_wd,error_name)
 
-input_param = "parameters_RUNTEST.json"
 input_param_path = os.path.join("Inputs",input_param)
 testcase_name = os.path.splitext(os.path.basename(input_param_path))[0]
 
-vsp_input = "BWB.vsp3"
 vsp_input_path = os.path.join("Inputs",vsp_input)
 VSP_model_name = os.path.splitext(os.path.basename(vsp_input_path))[0]
 
