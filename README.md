@@ -52,8 +52,6 @@ Ensure the following prerequisites are met before running the tool:
 >**Parameters File**  
 >Modify parameters in the parameters.json file, accounting for value types, while ensuring automatic updates based on calculations in VSP_Run_Script.py. Rest of the parameters should automatically be updated based on calculations in the VSP_Run_Script.py script, and the inertial values are pulled from the mass analysis executed just before this step in the same script. Then a new UPDATED parameter file with the same name is stored in the VSP_RUNS/(Run_Specific_Directory). The original parameters file in the inputs folder stays unmodified.   
 >>**Parameters to be modified:**  
->>>  "analysis_method": "VORTEX_LATTICE" *note: will usually stay the same  
->>>    "stability_type": "STABILITY_DEFAULT" *note: will usually stay the same  
 >>>    "RefFlag" *note: Important to pull geometry parameters from the model  
 >>>    "CGGeomSet" *note: will usually stay the same  
 >>>    "GeomSet" *note: will usually stay the same  

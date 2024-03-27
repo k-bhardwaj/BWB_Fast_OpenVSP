@@ -23,33 +23,37 @@ def xml_to_dict(element):
             element_dict[child.tag] = child.text.strip() if child.text else None
 
     return element_dict
-print("VSP_Create - Running")
+
+print("VSP_Create - Running") # output dump readibility
 current_wd = os.getcwd()
 
+#import argv
 vsp_run_dir = sys.argv[1]
 fast_output_file = sys.argv[2]
 airfoil_file = sys.argv[3]
-VSP_model_name = f"{sys.argv[4]}.vsp3"
+VSP_model_name = f"{sys.argv[4]}.vsp3" #add extension to model name
 
 global_vsp_run_dir = os.path.join(current_wd,vsp_run_dir)
-os.chdir(global_vsp_run_dir)
+os.chdir(global_vsp_run_dir) #change working directory to vsp run directory
 
-vsp.ClearVSPModel()
+vsp.ClearVSPModel() #vsp function to clear model 
 
-tree = ET.parse(fast_output_file)
+tree = ET.parse(fast_output_file) #to read xml file
 root = tree.getroot()
 
-data_geometry = root.find('./data/geometry')
+data_geometry = root.find('./data/geometry') #setting root for xml read
 sizing_dict = xml_to_dict(data_geometry)
 
-data_weight = root.find('./data/weight')
+data_weight = root.find('./data/weight') #setting root for xml dict
 weight_dict = xml_to_dict(data_weight)
 
+
+#setup data for making geometry in OPENVSP
 fuselage_root = float(sizing_dict['fuselage']['length'])
 fuselage_tip = float(sizing_dict['wing']['root']['chord'])
 fuselage_halfspan = float(sizing_dict['fuselage']['maximum_width'])/2
 fuselage_sweep_25 = float(sizing_dict['fuselage']['sweep_25_centerbody'])
-fuselage_sweep_loc = 0
+fuselage_sweep_loc = 0.25 
 
 kink_wing_root = fuselage_tip
 wing_halfspan_to_kink = float(sizing_dict['wing']['kink']['y']) - fuselage_halfspan
@@ -67,11 +71,8 @@ tip_sweep_loc = 0
 dihedral = 0 # general_undefined_params
 twist = 0 # general_undefined_params
 twist_loc = 0 # general_undefined_params
-wing_density = 250 #hardcoded value
+wing_density = 250 #hardcoded value due to lack of inertia module in fastoad
 
-# print(fuselage_halfspan,fuselage_root,fuselage_sweep_25,fuselage_tip)
-# print(wing_root,wing_halfspan_to_kink,wing_kink_chord,kink_section_0sweep_deg)
-# print(tip_section_root,tip_section_halfspan,tip_section_tip,tip_0sweep)
 stdout = vsp.cvar.cstdout
 errorMgr = vsp.ErrorMgrSingleton.getInstance()
 
@@ -120,7 +121,7 @@ vsp.SetParmValUpdate(fast_wing, "Twist", "XSec_3", twist)
 vsp.SetParmValUpdate(fast_wing, "Twist_Location", "XSec_3", twist_loc)
 vsp.SetParmValUpdate(fast_wing, "Dihedral", "XSec_3", dihedral)
 
-
+#loop to change airfoil in entire wing
 xsec_surf = vsp.GetXSecSurf(fast_wing, 0)
 for i in [0,1,2,3]:
     vsp.ChangeXSecShape(xsec_surf, i, vsp.XS_FILE_AIRFOIL)
@@ -128,7 +129,7 @@ for i in [0,1,2,3]:
     xsec_id = vsp.GetXSec(xsec_surf, i)
     vsp.ReadFileAirfoil(xsec_id, airfoil_file)
 
-vsp.SetVSPAERORefWingID(fast_wing)
+vsp.SetVSPAERORefWingID(fast_wing) # VERY IMPORTANT - HELPS TO SET GEOMETRY PARAMETERS AUTOMATICALLY. OTHERWISE THEY NEED TO BE DEFINED IN INPUT PARAMETER JSON FILE
 vsp.Update()
 
 
@@ -138,4 +139,4 @@ geoms = vsp.FindGeoms()
 errorMgr.PopErrorAndPrint(stdout)
 os.chdir(current_wd)
 vsp.ClearVSPModel()
-print("VSP_Create - Ended")
+print("VSP_Create - Ended") #output dump readibility

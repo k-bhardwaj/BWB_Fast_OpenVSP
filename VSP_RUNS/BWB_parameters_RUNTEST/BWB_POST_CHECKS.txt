@@ -25,7 +25,7 @@ Cn_r	Failed	Negative or no yaw damping. Potential Reason: CG could be behind the
 
 DYNAMIC STABILITY	Passed	 # SECTION HEADING - If time period of any mode is -1, it means mode is overdamped with zeta >= 1 or < 0.
 
-Short period mode	Failed	Short period mode is divergent, zeta_sp=-1.0638853702525075.
+Short period mode	Failed	Short period mode is divergent, zeta_sp=-1.063816416443225.
 Phugoid mode	Passed	Phugoid mode is convergent with time period: 76.08491526386518 s and damping factor 0.037613140104238524
 Dutch Roll mode	Failed	Dutch Roll mode is divergent, zeta_dr-0.017309829071221715.
 Roll mode	Passed	Roll mode is convergent with characteristic time: 0.46619140985815166 s

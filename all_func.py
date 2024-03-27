@@ -3,8 +3,9 @@ import shutil
 import re
 import json
 
+#this file contains most of the commonly used user defined functions. Some user defined functions however are only in the local scripts.  
 
-def empty_out_dir(output_dir):
+def empty_out_dir(output_dir): #make directory if it doesnt exist. Empty it if it does exist.
     if os.path.exists(output_dir):
         shutil.rmtree(output_dir)
         os.makedirs(output_dir)
@@ -12,7 +13,7 @@ def empty_out_dir(output_dir):
         os.makedirs(output_dir)
     return output_dir
 
-def create_dir(output_dir):
+def create_dir(output_dir): # make directory
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     return output_dir
@@ -25,10 +26,10 @@ def round4(value):
     else:
         return round(val, 4)
     
-def round2(value):
+def round3(value):
     # Convert to float and round to 3 decimal places
     val = float(value)
-    if abs(val) < 0.01:
+    if abs(val) < 0.001:
         return 0.0
     return round(val, 3)
 
@@ -48,7 +49,7 @@ def read_mass_file(mass_file):
         exit()
     return dict
 
-def params_from_json(json_file):
+def params_from_json(json_file): # imports params from json to dict
     import openvsp as vsp
     # Read parameters from JSON file
     with open(json_file, 'r') as f:

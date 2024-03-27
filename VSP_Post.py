@@ -10,25 +10,6 @@ import sys
 import openvsp as vsp
 
 
-#output_file_stab = os.path.join(output_dir, 'BWB_CleanedFile.stab')
-#output_file_csv = os.path.join(output_dir, 'BWB_Data.csv')
-
-
-def round4(value):
-    # Convert to float and round to 4 decimal places
-    val = float(value)
-    if abs(val) < 0.0001:
-        return 0.0
-    else:
-        return round(val, 4)
-
-def empty_out_dir(output_dir):
-    if os.path.exists(output_dir):
-        shutil.rmtree(output_dir)
-        os.makedirs(output_dir)
-    else:
-        os.makedirs(output_dir)
-
 def clean_stab(input_file, output_file):
     with open(input_file, 'r') as file:
         content = file.read()
@@ -39,20 +20,17 @@ def clean_stab(input_file, output_file):
         out_file.write(cleaned_content)
     return cleaned_content
 
+#returns the aoa range, num of divisions, and number of sections by processing the sections in cleaned stab file
 def AoA_data(sections):    
     num = len(sections)
-    #print(num)
     linesfirst = sections[0].split('\n')
-    #print(sections[0])
     lineslast = sections[num-4].split('\n')
-    #print(lineslast)
     aoa_first_line = None
     aoa_last_line = None
     for lines in linesfirst:
         if "AoA_" in lines:
             aoa_first_line = lines
     for lines in lineslast:
-        #print(lines)
         if "AoA_" in lines:
             aoa_last_line = lines  
     if aoa_first_line and aoa_last_line:
@@ -65,8 +43,10 @@ def AoA_data(sections):
     else:
         print("No lines containing 'AoA_' found.")
         return None
+    
 
-def csv_stab(cleaned_content,output_file_csv):
+#created a csv file for all angles analysed to allow easy viewing of data, comparison and plotting in latex 
+def csv_stab(cleaned_content,output_file_csv): 
     sections = re.split(r'\n\s*\n', cleaned_content)
     aoa_start, aoa_end, n_iter, num_sections = AoA_data(sections)
     n_iter = int(n_iter)
@@ -92,12 +72,12 @@ def csv_stab(cleaned_content,output_file_csv):
                     coef_name = columns[0]
                     for i, value in enumerate(columns[1:], start=1):
                         key = f"{coef_name}_{lines_coef[0].split()[i]}"
-                        csv_dict[key] = round4(value)
+                        csv_dict[key] = all_func.round4(value)
             for line in lines_next:
                 columns = line.split()
                 if columns: 
                     key = columns[0]
-                    csv_dict[key] = round4(columns[1])
+                    csv_dict[key] = all_func.round4(columns[1])
             if not header:
                 header.insert(0,'angle')
                 header.extend(csv_dict.keys())
@@ -114,8 +94,6 @@ def csv_stab(cleaned_content,output_file_csv):
             row = [angle] + list(csv_dict_nested[angle].values())
             csvwriter.writerow(row)       
     return csv_dict_nested
-
-
 
 
 def post_process(mass_input_file,stab_input_file,input_param,outtxt):
@@ -157,7 +135,7 @@ def post_process(mass_input_file,stab_input_file,input_param,outtxt):
                 if line.startswith("Totals"):  # Check if the line starts with "Totals"
                     parts = re.split(r'\s+', line.strip())
                     if len(parts) >= 12:  # Ensure there are enough parts to unpack
-                        totals["Name"], totals["Mass"], totals["cgX"], totals["cgY"], totals["cgZ"], totals["Ixx"], totals["Iyy"], totals["Izz"], totals["Ixy"], totals["Ixz"], totals["Iyz"], totals["Volume"] = parts[0], *map(all_func.round2, parts[1:])
+                        totals["Name"], totals["Mass"], totals["cgX"], totals["cgY"], totals["cgZ"], totals["Ixx"], totals["Iyy"], totals["Izz"], totals["Ixy"], totals["Ixz"], totals["Iyz"], totals["Volume"] = parts[0], *map(all_func.round3, parts[1:])
                         break  # Stop reading after finding the totals
     except FileNotFoundError:
         print(f"Error: File not found at path '{mass_file}'")
@@ -169,16 +147,9 @@ def post_process(mass_input_file,stab_input_file,input_param,outtxt):
     rho = float(param_dict['Rho'][0])
     u = float(param_dict['Vinf'][0])
     q = 0.5*rho*u*u
-    b = float(param_dict['bref'][0])
-    c = float(param_dict['cref'][0])
-    S = float(param_dict['Sref'][0])
-    # Mach = 0.8
-    # rho = 0.41
-    # u = 236
-    # q = 0.5*rho*u*u
-    # b = 36
-    # c = 9.68
-    # S = 276
+    b = float(param_dict['bref'][0]) #from param_dict
+    c = float(param_dict['cref'][0]) #from param_dict
+    S = float(param_dict['Sref'][0]) #from param_dict
 
     m = totals['Mass']
     Iyy = totals['Iyy']  # FROM MASS FILE
@@ -284,11 +255,6 @@ def post_process(mass_input_file,stab_input_file,input_param,outtxt):
         T_yw = 2 * np.pi / (omega_yw* np.sqrt(1 - (zeta_yw ** 2)))
 
 
-    #Open a new text file for writing
-    #with open('aerodynamic_checks.txt', 'w') as file:
-    #    Write the header row
-    #    file.write("Parameter\tCheck Passed\tComments\n")
-
     # Longitudinal Derivatives Checks
     checks = [
     ("\n\nLONGITUDINAL STABILITY",m>0,"# SECTION HEADING",""),     
@@ -355,24 +321,25 @@ def post_process(mass_input_file,stab_input_file,input_param,outtxt):
             # Write the line to the file
             file.write(line)
 
-print("VSP_Post - Running")
+print("VSP_Post - Running") #internal output file readibility
 
 current_wd = os.getcwd()
 
+#import argv
 vsp_run_dir = sys.argv[1]
 input_param = sys.argv[2]
 vspmodel_name = sys.argv[3]
 global_vsp_run_dir = os.path.join(current_wd,vsp_run_dir)
 
-os.chdir(global_vsp_run_dir)
+os.chdir(global_vsp_run_dir) #change directory to run folder
 
-
+#assign file names
 mass_file = f"{vspmodel_name}_MassProps.txt"    
 stab_file = f"{vspmodel_name}_DegenGeom.stab"        
 outputtxt = f"{vspmodel_name}_POST_Stability"
 post_process(mass_file,stab_file,input_param,outputtxt)
 
 
-os.chdir(current_wd)
+os.chdir(current_wd) #change directory back to repo home
 
-print("VSP_Post - Ended")
+print("VSP_Post - Ended, Run Complete")#internal output file readibility
