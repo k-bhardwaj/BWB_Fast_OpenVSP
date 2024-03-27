@@ -1,19 +1,19 @@
 **Project Overview**  
-This project encompasses the development of a stability assessment tool and framework integrated in-line with FAST-OAD, a rapid Overall Aircraft Design Tool, using OpenVSP, a parametric aircraft geometry tool. The primary focus lies in conducting a comprehensive analysis of static and dynamic stability characteristics for Blended Wing Body (BWB) aircraft to aid in rapid design.
+>This project encompasses the development of a stability assessment tool and framework integrated in-line with FAST-OAD, a rapid Overall Aircraft Design Tool, using OpenVSP, a parametric aircraft geometry tool. The primary focus lies in conducting a comprehensive analysis of static and dynamic stability characteristics for Blended Wing Body (BWB) aircraft to aid in rapid design.
 
 **Contributors - Kshitij Bhardwaj and Nagaraj Ganesh Prabhu**  
-Note: The "FastBWB" folder included in this repository and its contents were developed by Sandra Muñoz San José, Justo Antonio Rodríguez, and Miguel Valadas of ISAE-SUPAERO during a previous project. Their script was directly used as an input to Main_wFast.py.
+>Note: The "FastBWB" folder included in this repository and its contents were developed by Sandra Muñoz San José, Justo Antonio Rodríguez, and Miguel Valadas of ISAE-SUPAERO during a previous project. Their script was directly used as an input to Main_wFast.py.
 
 **Description**  
-FAST-OAD offers multi-disciplinary analysis and optimization capabilities, leveraging the OpenMDAO framework. It allows seamless switching between models within the same discipline and facilitates addition, removal, or development of models to align with specific study requirements.
+>FAST-OAD offers multi-disciplinary analysis and optimization capabilities, leveraging the OpenMDAO framework. It allows seamless switching between models within the same discipline and facilitates addition, removal, or development of models to align with specific study requirements.
 
-OpenVSP serves as the parametric aircraft geometry tool, enabling the creation of 3D aircraft models based on standard engineering parameters. These models are then processed into formats suitable for engineering analysis. It offers numerous benefits with regards to stability analyses.
+>OpenVSP serves as the parametric aircraft geometry tool, enabling the creation of 3D aircraft models based on standard engineering parameters. These models are then processed into formats suitable for engineering analysis. It offers numerous benefits with regards to stability analyses.
 
 **Integration Process**  
-The integration involves employing OpenVSP through its Python API to analyze the static and dynamic stability of BWB aircraft. Validation tests were conducted using the Swept_Wing_API example to ensure consistency between results obtained via the API and the OpenVSP GUI. 
+>The integration involves employing OpenVSP through its Python API to analyze the static and dynamic stability of BWB aircraft. Validation tests were conducted using the Swept_Wing_API example to ensure consistency between results obtained via the API and the OpenVSP GUI. 
 
 **Tool Structure**  
-The tool's architecture is organized into several functional scripts:
+>The tool's architecture is organized into several functional scripts:
 
 >**Main Scripts:**  
 >Main_wFast.py: Integrates with FastOAD environment to execute BWB script within FastOAD, facilitating seamless analysis.  
